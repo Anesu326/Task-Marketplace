@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from app.routers import auth, tasks, bids, users
+from app.routers import auth, tasks, bids, users, notifications
 from app.database import engine
 from app.models import task
 from app.database import Base
@@ -12,6 +12,7 @@ app.include_router(auth.router)
 app.include_router(tasks.router)
 app.include_router(bids.router)
 app.include_router(users.router)
+app.include_router(notifications.router)
 
 @app.get("/")
 def root():

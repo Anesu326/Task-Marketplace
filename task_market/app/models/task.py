@@ -7,6 +7,8 @@ class Task(Base):
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String)
     description = Column(String)
+    latitude = Column(Float)
+    longitude = Column(Float)
     location = Column(String)
     budget = Column(Float)
     status = Column(String, default="OPEN")
