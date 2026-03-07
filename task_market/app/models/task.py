@@ -10,3 +10,4 @@ class Task(Base):
     location = Column(String)
     budget = Column(Float)
     status = Column(String, default="OPEN")
+    assigned_worker_id = Column(Integer, nullable=True)
