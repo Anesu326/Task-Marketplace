@@ -16,6 +16,19 @@ def get_db():
     finally:
         db.close()
 
+tasks_db = []   # temporary in-memory storage
+
+@router.get("/tasks")
+def get_tasks():
+    return tasks_db
+
+
+@router.post("/tasks")
+def create_task(task: dict):
+    task["id"] = len(tasks_db) + 1
+    tasks_db.append(task)
+    return task
+
 @router.post("/tasks")
 async def create_task(task: TaskCreate, db: Session = Depends(get_db)):
 
