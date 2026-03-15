@@ -13,6 +13,14 @@ def get_db():
     finally:
         db.close()
 
+bids_db = []
+
+@router.post("/bids")
+def create_bid(bid: dict):
+    bid["id"] = len(bids_db) + 1
+    bids_db.append(bid)
+    return bid
+
 
 @router.post("/bids")
 def create_bid(bid: BidCreate, db: Session = Depends(get_db)):

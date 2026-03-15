@@ -17,6 +17,7 @@ def get_db():
         db.close()
 
 tasks_db = []   # temporary in-memory storage
+bids_db = []    # temporary in-memory storage
 
 @router.get("/tasks")
 def get_tasks():
@@ -26,6 +27,7 @@ def get_tasks():
 @router.post("/tasks")
 def create_task(task: dict):
     task["id"] = len(tasks_db) + 1
+    task["status"] = "OPEN"
     tasks_db.append(task)
     return task
 
@@ -53,6 +55,30 @@ async def create_task(task: TaskCreate, db: Session = Depends(get_db)):
     })
 
     return new_task
+
+@router.get("/tasks/{task_id}/bids")
+def get_task_bids(task_id: int):
+    return [b for b in bids_db if b["task_id"] == task_id]
+
+
+@router.post("/bids/{bid_id}/accept")
+def accept_bid(bid_id: int):
+    bid = next((b for b in bids_db if b["id"] == bid_id), None)
+
+    if not bid:
+        return {"error": "bid not found"}
+
+    task = next((t for t in tasks_db if t["id"] == bid["task_id"]), None)
+
+    if not task:
+        return {"error": "task not found"}
+
+    task["status"] = "ASSIGNED"
+    task["assigned_bid"] = bid_id
+
+    print("TASK UPDATED:", task)   # 🔥 debug line
+
+    return {"message": "task assigned"}
 
 @router.post("/tasks/{task_id}/accept-bid/{bid_id}")
 def accept_bid(task_id: int, bid_id: int, db: Session = Depends(get_db)):
