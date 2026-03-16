@@ -11,8 +11,10 @@ export default function BidModal({ task, onClose }) {
       },
       body: JSON.stringify({
         task_id: task.id,
-        amount: Number(amount)
-      })
+        worker_id: 1,
+        amount: Number(amount),
+        message: "Ready to work"
+      }),
     })
 
     alert("Bid placed")
@@ -23,14 +25,14 @@ export default function BidModal({ task, onClose }) {
 
   return (
     <div style={{
-      position:"fixed",
-      top:0,left:0,right:0,bottom:0,
-      background:"rgba(0,0,0,0.5)",
-      display:"flex",
-      justifyContent:"center",
-      alignItems:"center"
+      position: "fixed",
+      top: 0, left: 0, right: 0, bottom: 0,
+      background: "rgba(0,0,0,0.5)",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center"
     }}>
-      <div style={{background:"white", padding:20}}>
+      <div style={{ background: "white", padding: 20 }}>
         <h3>Bid for {task.title}</h3>
 
         <input

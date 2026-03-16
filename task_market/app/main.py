@@ -20,7 +20,7 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(tasks.router)
-app.include_router(bids.router)
+app.include_router(bids.router, prefix="/bids", tags=["Bids"])
 app.include_router(users.router)
 app.include_router(notifications.router)
 

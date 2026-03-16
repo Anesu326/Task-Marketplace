@@ -1,7 +1,8 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class BidCreate(BaseModel):
     task_id: int
-    worker_id: int
     amount: float
-    message: str
+    worker_id: Optional[int] = None
+    message: Optional[str] = None
