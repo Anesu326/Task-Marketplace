@@ -3,7 +3,11 @@ from pydantic import BaseModel
 class TaskCreate(BaseModel):
     title: str
     description: str
-    location: str
-    latitude: float
-    longitude: float
     budget: float
+    location: str
+
+class TaskOut(TaskCreate):
+    id: int
+
+    class Config:
+        from_attributes = True

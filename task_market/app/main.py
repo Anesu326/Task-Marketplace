@@ -1,14 +1,11 @@
 from fastapi import FastAPI
-from app.routers import auth, tasks, bids, users, notifications
-from app.database import engine
-from app.models import task
-from app.database import Base
 from fastapi.middleware.cors import CORSMiddleware
-from app.routers import tasks
+from app.database import Base, engine
+from app.api.routes import users, tasks, bids
 
 Base.metadata.create_all(bind=engine)
 
-app = FastAPI(title="Task Marketplace API")
+app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
@@ -18,12 +15,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth.router)
-app.include_router(tasks.router)
-app.include_router(bids.router, prefix="/bids", tags=["Bids"])
-app.include_router(users.router)
-app.include_router(notifications.router)
-
-@app.get("/")
-def root():
-    return {"message": "Task Marketplace API running"}
+app.include_router(users.router, prefix="/api/users", tags=["Users"])
+app.include_router(tasks.router, prefix="/api/tasks", tags=["Tasks"])
+app.include_router(bids.router, prefix="/api/bids", tags=["Bids"])

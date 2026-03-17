@@ -1,56 +1,32 @@
-import { useState } from "react"
-import { createTask } from "../services/api"
+import { useState } from "react";
+import API from "../services/api";
 
-export default function PostTask({ onTaskCreated }) {
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
-  const [budget, setBudget] = useState("")
+export default function PostTask() {
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [budget, setBudget] = useState("");
+  const [location, setLocation] = useState("");
 
-  const handleSubmit = async (e) => {
-  e.preventDefault()
+  const handleSubmit = async () => {
+    await API.post("/tasks/", {
+      title,
+      description,
+      budget: Number(budget),
+      location
+    });
 
-  await createTask({
-    title,
-    description,
-    budget: Number(budget)
-  })
-
-  onTaskCreated()   // 🔥 THIS triggers instant refresh
-
-  setTitle("")
-  setDescription("")
-  setBudget("")
-}
+    alert("Task posted");
+    window.location.reload();
+  };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h2>Post a Task</h2>
-
-      <input
-        placeholder="Task Title"
-        value={title}
-        onChange={e => setTitle(e.target.value)}
-      />
-
-      <br /><br />
-
-      <textarea
-        placeholder="Description"
-        value={description}
-        onChange={e => setDescription(e.target.value)}
-      />
-
-      <br /><br />
-
-      <input
-        placeholder="Budget"
-        value={budget}
-        onChange={e => setBudget(e.target.value)}
-      />
-
-      <br /><br />
-
-      <button type="submit">Post Task</button>
-    </form>
-  )
+    <div>
+      <h2>Post Task</h2>
+      <input placeholder="title" onChange={e => setTitle(e.target.value)} />
+      <input placeholder="description" onChange={e => setDescription(e.target.value)} />
+      <input placeholder="budget" onChange={e => setBudget(e.target.value)} />
+      <input placeholder="location" onChange={e => setLocation(e.target.value)} />
+      <button onClick={handleSubmit}>Post</button>
+    </div>
+  );
 }

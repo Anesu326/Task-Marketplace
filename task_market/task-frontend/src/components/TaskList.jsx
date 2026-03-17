@@ -1,37 +1,60 @@
-import { useEffect, useState } from "react"
-import { getTasks } from "../services/api"
+import { useEffect, useState } from "react";
+import API from "../services/api";
+import PlaceBid from "./PlaceBid";
+import BidList from "./BidList";
 
-export default function TaskList({ tasks, onBidClick, onViewBids }) {
-    if (!tasks) return <div>Loading...</div>
+
+export default function TaskList() {
+    const [tasks, setTasks] = useState([]);
+    const [refreshKey, setRefreshKey] = useState(0);
+
+    useEffect(() => {
+        API.get("/tasks/")
+            .then(res => setTasks(res.data));
+    }, []);
 
     return (
         <div>
-            <h2>Available Tasks</h2>
-
-            {tasks.map(task => (
+            <h2>Tasks</h2>
+            {tasks.map(t => (
                 <div
-                    key={task.id}
-                    style={{ border: "1px solid #ccc", padding: 10, margin: 10 }}
+                    key={t.id}
+                    style={{
+                        border: "1px solid #e5e7eb",
+                        borderRadius: 12,
+                        padding: 16,
+                        marginBottom: 16,
+                        boxShadow: "0 4px 10px rgba(0,0,0,0.05)",
+                        background: "white"
+                    }}
                 >
-                    <h3>{task.title}</h3>
-                    <p>{task.description}</p>
-                    <strong>${task.budget}</strong>
-                    <p>Status: {task.status}</p>
+                    <h3 style={{ margin: 0 }}>{t.title}</h3>
 
-                    <br />
+                    <p style={{ color: "#6b7280" }}>{t.description}</p>
 
-                    {task.status === "OPEN" ? (
-                        <>
-                            <button onClick={() => onBidClick(task)}>Place Bid</button>
-                            <button onClick={() => onViewBids(task)}>View Bids</button>
-                        </>
-                    ) : (
-                        <p style={{ color: "green", fontWeight: "bold" }}>
-                            Task Assigned
-                        </p>
-                    )}
+                    <div style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center"
+                    }}>
+                        <span style={{
+                            background: "#ecfeff",
+                            padding: "4px 10px",
+                            borderRadius: 8,
+                            fontWeight: "bold"
+                        }}>
+                            Budget ${t.budget}
+                        </span>
+
+                        <PlaceBid
+                            taskId={t.id}
+                            onBidPlaced={() => setRefreshKey(prev => prev + 1)}
+                        />
+                    </div>
+
+                    <BidList key={refreshKey + "-" + t.id} taskId={t.id} />
                 </div>
             ))}
         </div>
-    )
+    );
 }

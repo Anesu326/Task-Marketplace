@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float
+from sqlalchemy import Column, Integer, String, Float, Text
 from app.database import Base
 
 class Task(Base):
@@ -6,10 +6,6 @@ class Task(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String)
-    description = Column(String)
-    latitude = Column(Float)
-    longitude = Column(Float)
-    location = Column(String)
+    description = Column(Text)
     budget = Column(Float)
-    status = Column(String, default="OPEN")
-    assigned_worker_id = Column(Integer, nullable=True)
+    location = Column(String)
