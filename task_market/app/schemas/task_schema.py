@@ -8,6 +8,6 @@ class TaskCreate(BaseModel):
 
 class TaskOut(TaskCreate):
     id: int
-
+    user_id: int
     class Config:
         from_attributes = True

@@ -7,3 +7,4 @@ class Bid(Base):
     id = Column(Integer, primary_key=True, index=True)
     amount = Column(Float)
     task_id = Column(Integer, ForeignKey("tasks.id"))
+    user_id = Column(Integer, ForeignKey("users.id"))  # NEW

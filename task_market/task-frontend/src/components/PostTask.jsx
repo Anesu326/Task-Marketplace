@@ -1,7 +1,10 @@
 import { useState } from "react";
 import API from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 export default function PostTask() {
+  const { user } = useAuth();
+  if (!user) return <p>Please log in to post a task</p>;
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [budget, setBudget] = useState("");

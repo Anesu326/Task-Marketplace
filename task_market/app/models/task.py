@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Float, Text
+from sqlalchemy import Column, Integer, String, Float, ForeignKey
 from app.database import Base
 
 class Task(Base):
@@ -6,6 +6,6 @@ class Task(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     title = Column(String)
-    description = Column(Text)
+    description = Column(String)
     budget = Column(Float)
-    location = Column(String)
+    user_id = Column(Integer, ForeignKey("users.id"))  # NEW

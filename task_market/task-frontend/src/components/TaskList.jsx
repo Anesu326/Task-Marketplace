@@ -1,60 +1,57 @@
 import { useEffect, useState } from "react";
 import API from "../services/api";
-import PlaceBid from "./PlaceBid";
-import BidList from "./BidList";
-
+import PlaceBid from "../components/PlaceBid";
+import BidList from "../components/BidList";
+import useBidsSocket from "../hooks/useBidsSocket";
 
 export default function TaskList() {
-    const [tasks, setTasks] = useState([]);
-    const [refreshKey, setRefreshKey] = useState(0);
+  const [tasks, setTasks] = useState([]);
 
-    useEffect(() => {
-        API.get("/tasks/")
-            .then(res => setTasks(res.data));
-    }, []);
+  // Fetch initial tasks
+  const fetchTasks = () => {
+    API.get("/tasks/").then(res => setTasks(res.data));
+  };
 
-    return (
-        <div>
-            <h2>Tasks</h2>
-            {tasks.map(t => (
-                <div
-                    key={t.id}
-                    style={{
-                        border: "1px solid #e5e7eb",
-                        borderRadius: 12,
-                        padding: 16,
-                        marginBottom: 16,
-                        boxShadow: "0 4px 10px rgba(0,0,0,0.05)",
-                        background: "white"
-                    }}
-                >
-                    <h3 style={{ margin: 0 }}>{t.title}</h3>
+  useEffect(() => {
+    fetchTasks();
+  }, []);
 
-                    <p style={{ color: "#6b7280" }}>{t.description}</p>
-
-                    <div style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        alignItems: "center"
-                    }}>
-                        <span style={{
-                            background: "#ecfeff",
-                            padding: "4px 10px",
-                            borderRadius: 8,
-                            fontWeight: "bold"
-                        }}>
-                            Budget ${t.budget}
-                        </span>
-
-                        <PlaceBid
-                            taskId={t.id}
-                            onBidPlaced={() => setRefreshKey(prev => prev + 1)}
-                        />
-                    </div>
-
-                    <BidList key={refreshKey + "-" + t.id} taskId={t.id} />
-                </div>
-            ))}
-        </div>
+  // WebSocket live update
+  useBidsSocket(newBid => {
+    setTasks(prevTasks =>
+      prevTasks.map(task => {
+        if (task.id === newBid.task_id) {
+          // Add or update bids array for each task
+          const updatedBids = task.bids ? [...task.bids, newBid] : [newBid];
+          return { ...task, bids: updatedBids };
+        }
+        return task;
+      })
     );
+  });
+
+  return (
+    <div>
+      <h2>Tasks</h2>
+      {tasks.map(task => {
+        const lowestBid =
+          task.bids && task.bids.length > 0
+            ? Math.min(...task.bids.map(b => b.amount))
+            : null;
+
+        return (
+          <div key={task.id} style={{ border: "1px solid gray", padding: 10, margin: 10 }}>
+            <h3>{task.title}</h3>
+            <p>{task.description}</p>
+            <p>Budget: ${task.budget}</p>
+
+            {lowestBid !== null && <p>Lowest Bid: ${lowestBid}</p>}
+
+            <PlaceBid taskId={task.id} onBidPlaced={fetchTasks} />
+            <BidList bids={task.bids || []} />
+          </div>
+        );
+      })}
+    </div>
+  );
 }

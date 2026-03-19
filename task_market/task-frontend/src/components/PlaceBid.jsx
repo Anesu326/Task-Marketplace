@@ -1,26 +1,25 @@
 import { useState } from "react";
 import API from "../services/api";
+import { useAuth } from "../context/AuthContext";
 
 export default function PlaceBid({ taskId, onBidPlaced }) {
+  const { user } = useAuth();
   const [amount, setAmount] = useState("");
   const [loading, setLoading] = useState(false);
 
+  if (!user) return <p>Login to place a bid</p>;
+
   const handleBid = async () => {
+    if (!amount) return alert("Enter a bid amount");
+
     try {
       setLoading(true);
-
-      const res = await API.post("/bids/", {
-        amount: Number(amount),
-        task_id: taskId
-      });
-
+      const res = await API.post("/bids/", { amount: Number(amount), task_id: taskId });
       setAmount("");
-      if (onBidPlaced) onBidPlaced();  // ✅ must call prop if defined
-      alert("✅ Bid placed: $" + res.data.amount);
-
+      onBidPlaced?.(); // ✅ triggers dashboard refresh
     } catch (err) {
-      console.error("Bid error:", err);
-      alert("❌ Bid failed");
+      console.error(err);
+      alert("Bid failed");
     } finally {
       setLoading(false);
     }

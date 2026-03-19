@@ -6,6 +6,7 @@ class BidCreate(BaseModel):
 
 class BidOut(BidCreate):
     id: int
-
+    user_id: int
+    
     class Config:
         from_attributes = True
